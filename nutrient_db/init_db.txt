@@ -1,0 +1,14 @@
+.read #dir#/create_tables.sql
+.mode csv
+.import --skip 1 "#dir#/raw_data/YIELD NAME.csv" yield_name
+.import --skip 1 "#dir#/raw_data/REFUSE NAME.csv" refuse_name
+.import --skip 1 "#dir#/raw_data/MEASURE NAME.csv" measure_name
+.import --skip 1 "#dir#/raw_data/NUTRIENT NAME.csv" nutrient_name
+.import --skip 1 "#dir#/raw_data/FOOD GROUP.csv" food_group
+.import --skip 1 "#dir#/raw_data/FOOD SOURCE.csv" food_source
+.import --skip 1 "#dir#/raw_data/NUTRIENT SOURCE.csv" nutrient_source
+.import --skip 1 "#dir#/raw_data/FOOD NAME.csv" food_name
+.import --skip 1 "#dir#/raw_data/YIELD AMOUNT.csv" yield_amount
+.import --skip 1 "#dir#/raw_data/REFUSE AMOUNT.csv" refuse_amount
+.import --skip 1 "#dir#/raw_data/CONVERSION FACTOR.csv" conversion_factor
+.import --skip 1 "#dir#/raw_data/NUTRIENT AMOUNT.csv" nutrient_amount
