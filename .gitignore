@@ -1,1 +1,6 @@
 *.db
+rust/debug/
+rust/target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
