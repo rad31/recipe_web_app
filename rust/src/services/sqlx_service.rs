@@ -1,7 +1,7 @@
 use std::error::Error;
 use sqlx::{Row, Connection};
 
-use crate::models::measure::Measure;
+use crate::models::db::Measure;
 
 pub async fn create(measure: Measure, pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
     let query = "INSERT INTO measure (measure_id, measure_name, measure_name_f) VALUES ($1, $2, $3)";
@@ -58,4 +58,8 @@ pub async fn is_data_present(pool: &sqlx::PgPool) -> Result<bool, Box<dyn Error>
     let count: i64 = res.get("count");
 
     Ok(count > 0)
+}
+
+pub async fn insert_new_user(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
+    Ok(())
 }

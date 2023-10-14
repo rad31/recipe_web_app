@@ -1,3 +1,7 @@
-pub mod route_login;
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
 
-pub const AUTH_TOKEN: &str = "auth-token";
+pub mod error;
+pub mod middleware;
+pub mod routes_auth;
+pub mod routes_hello;
