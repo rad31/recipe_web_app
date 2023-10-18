@@ -4,6 +4,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug, Error)]
 pub enum Error {
+    AccessTokenExpired,
     AccessTokenInvalid,
 }
 
@@ -32,8 +33,8 @@ impl From<uuid::Error> for Error {
     }
 }
 
-impl From<hmac::digest::InvalidLength> for Error {
-    fn from(_: hmac::digest::InvalidLength) -> Self {
+impl From<std::num::ParseIntError> for Error {
+    fn from(_: std::num::ParseIntError) -> Self {
         Error::AccessTokenInvalid
     }
 }

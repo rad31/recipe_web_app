@@ -11,14 +11,7 @@ pub enum Error  {
     ConfigMissingEnv(&'static str),
     ConfigWrongFormat(&'static str),
 
-    Model(models::error::Error),
-}
-
-impl IntoResponse for Error {
-    fn into_response(self) -> Response {
-        debug!("{:<12} - {self:?}", "INTO_RES");
-        (StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR").into_response()
-    }
+    // Model(models::error::Error),
 }
 
 impl core::fmt::Display for Error {

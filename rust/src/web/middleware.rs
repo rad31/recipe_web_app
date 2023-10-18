@@ -37,8 +37,8 @@ impl<S: Send + Sync> FromRequestParts<S> for Ctx {
             _ => return Err(Error::AccessTokenInvalid)
         };
 
-        Ok(Ctx {
-            user_id: jwt_service::extract_user_id(token)?
-        })
+        let ctx = jwt_service::extract_ctx(token)?;
+
+        Ok(ctx)
     }
 }

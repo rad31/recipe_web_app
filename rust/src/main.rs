@@ -9,6 +9,7 @@ mod web;
 pub use self::error::{Error, Result};
 pub use config::config;
 
+use crate::models::ModelManager;
 use crate::models::db::Measure;
 use crate::services::sqlx_service;
 use std::net::SocketAddr;
@@ -31,20 +32,13 @@ async fn main() -> Result<()> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    // let nutrients_connection_string = "postgres://ronny:password@localhost:5432/nutrients";
-    // let pool = sqlx::postgres::PgPool::connect(nutrients_connection_string).await?;
-    // sqlx::migrate!("./migrations").run(&pool).await?;
+    let mm = ModelManager::new().await.unwrap();
 
-    // let data_present = sqlx_service::is_data_present(&pool).await?;
-    // if (!data_present) {
-    //     sqlx_service::insert_nutrient_data(nutrients_connection_string).await?;
-    // }
-
-    let routes_hello = web::routes_hello::routes();
-        // .route_layer(middleware::from_fn(web::middleware::require_auth));
+    let routes_hello = web::routes_hello::routes()
+        .route_layer(middleware::from_fn(web::middleware::require_auth));
 
     let routes_all = Router::new()
-        .merge(routes_auth::routes())
+        .merge(routes_auth::routes(mm))
         .nest("/api", routes_hello)
         .layer(middleware::map_response(main_response_mapper))
         .fallback_service(routes_static());
@@ -60,7 +54,7 @@ async fn main() -> Result<()> {
 }
 
 async fn main_response_mapper(res: Response) -> Response {
-    debug!("{:<12} main_response_mapper\n", "RES_MAPPER");
+    debug!("{:<12} - main_response_mapper\n", "RES_MAPPER");
     res
 }
 

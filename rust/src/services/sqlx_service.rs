@@ -1,21 +1,6 @@
 use std::error::Error;
 use sqlx::{Row, Connection};
 
-use crate::models::db::Measure;
-
-pub async fn create(measure: Measure, pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
-    let query = "INSERT INTO measure (measure_id, measure_name, measure_name_f) VALUES ($1, $2, $3)";
-    
-    sqlx::query(query)
-        .bind(&measure.id)
-        .bind(&measure.name)
-        .bind(&measure.name_f)
-        .execute(pool)
-        .await?;
-
-    Ok(())
-}
-
 pub async fn insert_data(conn: &mut sqlx::PgConnection, file_name: &str, table_name: &str) -> Result<(), Box<dyn Error>> {
     let file_path = format!("../nutrient_db/raw_data/{}", file_name);
     // CSV files are encoded in ISO 8859-1 which is named LATIN1 in postgres
@@ -58,8 +43,4 @@ pub async fn is_data_present(pool: &sqlx::PgPool) -> Result<bool, Box<dyn Error>
     let count: i64 = res.get("count");
 
     Ok(count > 0)
-}
-
-pub async fn insert_new_user(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
-    Ok(())
 }

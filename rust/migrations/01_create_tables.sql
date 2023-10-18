@@ -107,8 +107,8 @@ CREATE TABLE nutrient_amount(
     FOREIGN KEY (nutrient_source_id) REFERENCES nutrient_source(id)
 );
 
-CREATE TABLE user(
+CREATE TABLE users(
     id UUID PRIMARY KEY,
-    username VARCHAR,
+    username VARCHAR UNIQUE,
     password_hash VARCHAR
 );
