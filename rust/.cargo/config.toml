@@ -1,0 +1,11 @@
+[env]
+
+RUST_LOG="recipez=debug"
+
+# Hash cost should be increased in real world scenario
+PASSWORD_HASH_COST="8"
+DB_MAX_CONNECTIONS="4"
+DB_URL="postgres://ronny:password@localhost:5432/nutrients"
+JWT_SECRET="secret"
+JWT_LIFESPAN_SECONDS="3600"
+WEB_FOLDER="web-folder/"

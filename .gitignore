@@ -4,3 +4,9 @@ rust/target/
 Cargo.lock
 **/*.rs.bk
 *.pdb
+
+remix/node_modules/
+remix/.cache
+remix/build
+remix/public/build
+remix/.env
