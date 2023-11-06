@@ -5,22 +5,70 @@ import {
     useAuthContextData,
 } from "../context/AuthContext";
 
+type FormInput = {
+    value: string;
+    label: string;
+    type: "text" | "password";
+};
+
+type CredentialForm = {
+    email: FormInput;
+    password: FormInput;
+    confirmedPassword?: FormInput;
+};
+
+const baseLoginForm: CredentialForm = {
+    email: {
+        value: "",
+        label: "Email",
+        type: "text",
+    },
+    password: {
+        value: "",
+        label: "Password",
+        type: "password",
+    },
+};
+
+const baseSignUpForm: CredentialForm = {
+    ...baseLoginForm,
+    confirmedPassword: {
+        value: "",
+        label: "Confirm password",
+        type: "password",
+    },
+};
+
 function Login() {
-    const [isSignUp, setSignUp] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [form, setForm] = useState<CredentialForm>(baseLoginForm);
     const [passwordMatch, setPasswordMatch] = useState(true);
-    const [confirmedPassword, setConfirmedPassword] = useState("");
     const auth = useAuthContextData();
     const { setAuthenticated } = useAuthContextActions();
+    let isSignUp = form.confirmedPassword !== undefined;
 
-    const signUp = () => {
-        if (password !== confirmedPassword) {
+    const submit = () => {
+        if (isSignUp && form.password !== form.confirmedPassword) {
             setPasswordMatch(false);
             return;
         }
         setAuthenticated();
     };
+
+    const changeForm = () => {
+        if (isSignUp) {
+            let newForm = { ...form };
+            delete newForm.confirmedPassword;
+            setForm(newForm);
+            setPasswordMatch(true);
+        } else {
+            setForm((prev) => ({
+                ...prev,
+                confirmedPassword: baseSignUpForm.confirmedPassword,
+            }));
+        }
+    };
+
+    const formFields = Object.keys(form) as Array<keyof CredentialForm>;
 
     return (
         <dialog
@@ -30,66 +78,31 @@ function Login() {
             <div className="flex-col min-h-96 w-96">
                 <div>
                     <form method="dialog">
-                        <div className="flex-col">
-                            <div className="pb-4">
-                                <input
-                                    placeholder="Email"
-                                    type="text"
-                                    name="email"
-                                    className="rounded px-2 py-1"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div className="pb-4">
-                                <input
-                                    placeholder="Password"
-                                    type="password"
-                                    name="password"
-                                    className="rounded px-2 py-1"
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                />
-                            </div>
-
-                            <div className="pb-4">
-                                {isSignUp ? (
+                        <div className="flex-col justify-items-center">
+                            {formFields.map((key) => (
+                                <div key={key} className="content-center pb-4">
                                     <input
-                                        placeholder="Confirm Password"
-                                        type="password"
-                                        name="confirmedPassword"
-                                        className={`rounded px-2 py-1`}
-                                        value={confirmedPassword}
+                                        className="w-full rounded px-2 py-1"
+                                        placeholder={form[key]?.label}
+                                        type={form[key]?.type}
+                                        value={form[key]?.value}
                                         onChange={(e) =>
-                                            setConfirmedPassword(e.target.value)
+                                            setForm((prev) => ({
+                                                ...prev,
+                                                [key]: {
+                                                    ...form[key],
+                                                    value: e.target.value,
+                                                },
+                                            }))
                                         }
                                     />
-                                ) : (
-                                    <div className="h-8"></div>
-                                )}
-                            </div>
+                                </div>
+                            ))}
 
                             <div className="pb-4">
-                                {passwordMatch ? (
-                                    <div className="h-6"></div>
-                                ) : (
-                                    <span className="font-small text-orange-primary">
-                                        {"Passwords must match"}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="self-justify-center pb-4">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        console.log(
-                                            `${email}:${password}:${confirmedPassword}`
-                                        );
-                                        signUp();
-                                    }}
+                                    onClick={() => submit()}
                                     className="h-12 w-full rounded-lg bg-yellow-primary hover:bg-orange-primary"
                                 >
                                     <span className="inline-block align-middle text-green-primary">
@@ -102,11 +115,8 @@ function Login() {
                         </div>
                     </form>
                 </div>
-                <div className="self-justify-center">
-                    <button
-                        onClick={() => setSignUp(!isSignUp)}
-                        className="self-center"
-                    >
+                <div>
+                    <button onClick={changeForm} className="">
                         <span className="inline-block align-middle text-white hover:text-yellow-primary">
                             {isSignUp
                                 ? "Already have an account?"
