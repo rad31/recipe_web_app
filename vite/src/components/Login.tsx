@@ -48,6 +48,7 @@ const baseSignUpForm: CredentialForm = {
 function Login() {
     const [form, setForm] = useState<CredentialForm>(baseLoginForm);
     const [passwordMatch, setPasswordMatch] = useState(true);
+    const [authenticating, setAuthenticating] = useState(false);
     const auth = useAuthContextData();
     const { setAuthenticated } = useAuthContextActions();
     let isSignUp = form.confirmedPassword !== undefined;
@@ -60,16 +61,18 @@ function Login() {
 
         const endpoint = isSignUp ? "signup" : "login";
 
+        setAuthenticating(true);
         axios
             .post<AuthRequest>(`http://127.0.0.1:8080/api/auth/${endpoint}`, {
                 username: form.email.value,
                 password: form.password.value,
             })
             .then((result) => {
+                setAuthenticating(false);
                 if (result.status == 200) {
                     setAuthenticated();
                 } else {
-                    console.log("Error logging in");
+                    // TODO
                 }
             });
     };
@@ -98,10 +101,11 @@ function Login() {
             <div className="flex-col min-h-96 w-96">
                 <form method="dialog" className="flex-col justify-center">
                     {formFields.map((key) => (
-                        <div key={key} className="pb-4">
+                        <div key={key} className="relative pb-4">
                             <input
-                                className="w-full rounded px-2 py-1"
-                                placeholder={form[key]?.label}
+                                id={key}
+                                className="block rounded-lg px-2 pb-3 pt-5 w-full text-gray-900 bg-gray-50 appearance-none focus:outline-none focus:ring-0 peer"
+                                placeholder=""
                                 type={form[key]?.type}
                                 value={form[key]?.value}
                                 onChange={(e) =>
@@ -114,6 +118,12 @@ function Login() {
                                     }))
                                 }
                             />
+                            <label
+                                htmlFor={key}
+                                className="absolute text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+                            >
+                                {form[key]?.label}
+                            </label>
                         </div>
                     ))}
 
@@ -121,7 +131,7 @@ function Login() {
                         <button
                             type="button"
                             onClick={submit}
-                            className="h-12 w-full rounded-lg bg-yellow-primary hover:bg-orange-primary"
+                            className="py-4 w-full rounded-lg duration-200 bg-yellow-primary hover:bg-orange-primary shadow-sm hover:shadow-md"
                         >
                             <span className="inline-block align-middle text-green-primary">
                                 {isSignUp ? "Create account" : "Sign in"}
@@ -131,7 +141,7 @@ function Login() {
                 </form>
                 <div className="flex justify-center">
                     <button onClick={changeForm} className="">
-                        <span className="inline-block align-middle text-white hover:text-yellow-primary">
+                        <span className="inline-block align-middle text-white hover:text-yellow-primary duration-200">
                             {isSignUp
                                 ? "Already have an account?"
                                 : "Create an account"}

@@ -11,7 +11,6 @@ function LoginButton() {
     const updateAuth = () => {
         switch (auth) {
             case AuthState.AuthInProgress: {
-                console.log("Error");
                 break;
             }
             case AuthState.Authenticated: {
@@ -28,7 +27,7 @@ function LoginButton() {
     return (
         <button
             onClick={updateAuth}
-            className="m-4 h-12 w-24 rounded-lg bg-green-secondary hover:bg-yellow-primary text-white hover:text-green-primary"
+            className="m-4 h-12 w-24 rounded-lg duration-200 bg-green-secondary hover:bg-yellow-primary text-white hover:text-green-primary shadow-sm hover:shadow-md"
         >
             <span className="inline-block align-middle">
                 {auth === AuthState.Unauthenticated ? "Sign in" : "Sign out"}
