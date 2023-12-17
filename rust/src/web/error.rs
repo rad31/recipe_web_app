@@ -61,10 +61,11 @@ impl From<std::convert::Infallible> for Error {
 impl From<auth_service::error::Error> for Error {
     fn from(e: auth_service::error::Error) -> Self {
         match e {
+            auth_service::error::Error::PasswordInvalid => Error::LoginFailed,
             auth_service::error::Error::UserAlreadyExists => Error::UserAlreadyExists,
             auth_service::error::Error::UserCreationFailed(_) => Error::UserCreationFailed,
             auth_service::error::Error::UserConversionFailed => Error::UserCreationFailed,
-            auth_service::error::Error::UserOrPasswordNotFound => Error::LoginFailed,
+            auth_service::error::Error::UserNotFound => Error::LoginFailed,
         }
     }
 }

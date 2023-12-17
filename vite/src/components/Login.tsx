@@ -4,6 +4,7 @@ import {
     useAuthContextActions,
     useAuthContextData,
 } from "../context/AuthContext";
+import axios from "axios";
 
 type FormInput = {
     value: string;
@@ -15,6 +16,11 @@ type CredentialForm = {
     email: FormInput;
     password: FormInput;
     confirmedPassword?: FormInput;
+};
+
+type AuthRequest = {
+    username: string;
+    password: string;
 };
 
 const baseLoginForm: CredentialForm = {
@@ -47,11 +53,25 @@ function Login() {
     let isSignUp = form.confirmedPassword !== undefined;
 
     const submit = () => {
-        if (isSignUp && form.password !== form.confirmedPassword) {
+        if (isSignUp && form.password.value !== form.confirmedPassword?.value) {
             setPasswordMatch(false);
             return;
         }
-        setAuthenticated();
+
+        const endpoint = isSignUp ? "signup" : "login";
+
+        axios
+            .post<AuthRequest>(`http://127.0.0.1:8080/api/auth/${endpoint}`, {
+                username: form.email.value,
+                password: form.password.value,
+            })
+            .then((result) => {
+                if (result.status == 200) {
+                    setAuthenticated();
+                } else {
+                    console.log("Error logging in");
+                }
+            });
     };
 
     const changeForm = () => {
@@ -100,7 +120,7 @@ function Login() {
                     <div className="pb-4">
                         <button
                             type="button"
-                            onClick={() => submit()}
+                            onClick={submit}
                             className="h-12 w-full rounded-lg bg-yellow-primary hover:bg-orange-primary"
                         >
                             <span className="inline-block align-middle text-green-primary">

@@ -7,6 +7,8 @@ mod services;
 mod web;
 
 pub use self::error::{Error, Result};
+use axum::http::Method;
+use axum::http::header::CONTENT_TYPE;
 pub use config::config;
 
 use crate::models::ModelManager;
@@ -19,7 +21,7 @@ use axum::routing::{get, get_service};
 use axum::response::{Html, IntoResponse, Response};
 use serde::Deserialize;
 use sqlx::{Connection, Row};
-use tower_http::services::ServeDir;
+use tower_http::{services::ServeDir, cors::{Any, CorsLayer}};
 use tracing::{info, debug};
 use tracing_subscriber::EnvFilter;
 use web::routes_auth;
@@ -32,15 +34,21 @@ async fn main() -> Result<()> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let mm = ModelManager::new().await.unwrap();
+    let model_manager = ModelManager::new().await.unwrap();
 
     let routes_hello = web::routes_hello::routes()
         .route_layer(middleware::from_fn(web::middleware::require_auth));
 
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST, Method::PUT])
+        .allow_headers([CONTENT_TYPE])
+        .allow_origin(Any);
+
     let routes_all = Router::new()
-        .merge(routes_auth::routes(mm))
+        .merge(routes_auth::routes(model_manager))
         .nest("/api", routes_hello)
         .layer(middleware::map_response(main_response_mapper))
+        .layer(cors)
         .fallback_service(routes_static());
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));

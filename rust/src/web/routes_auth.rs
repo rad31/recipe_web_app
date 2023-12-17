@@ -8,8 +8,8 @@ use uuid::Uuid;
 
 pub fn routes(mm: ModelManager) -> Router {
     Router::new()
-        .route("/api/signup", post(sign_up))
-        .route("/api/login", post(login))
+        .route("/api/auth/signup", post(sign_up))
+        .route("/api/auth/login", post(login))
         .with_state(mm)
 }
 

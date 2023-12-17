@@ -31,7 +31,10 @@ pub async fn login(mm: &ModelManager, req: LoginRequest) -> Result<Uuid> {
         .fetch_one(db)
         .await?;
 
-    let authorized = verify_password(&req.password, &user.password_hash);
+    let authorized = verify_password(&req.password, &user.password_hash)?;
 
-    Ok(user.id)
+    match authorized {
+        true => Ok(user.id),
+        false => Err(Error::PasswordInvalid),
+    }
 }

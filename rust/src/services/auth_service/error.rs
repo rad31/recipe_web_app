@@ -5,10 +5,11 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
+    PasswordInvalid,
     UserAlreadyExists,
     UserConversionFailed,
     UserCreationFailed(sqlx::Error),
-    UserOrPasswordNotFound,
+    UserNotFound,
 }
 
 impl core::fmt::Display for Error {
@@ -26,7 +27,7 @@ impl From<sqlx::Error> for Error {
         debug!("{}", e);
         let dbe =  match e {
             sqlx::Error::Database(ref dbe) => dbe,
-            sqlx::Error::RowNotFound => return Error::UserOrPasswordNotFound,
+            sqlx::Error::RowNotFound => return Error::UserNotFound,
             _ => return Error::UserCreationFailed(e),
         };
         match dbe.is_unique_violation() {
