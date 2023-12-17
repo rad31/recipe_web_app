@@ -74,7 +74,8 @@ function Login() {
     const { setAuthenticated } = useAuthContextActions();
     let isSignUp = form.confirmedPassword !== undefined;
 
-    const submit = () => {
+    const submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         if (isSignUp && form.password.value !== form.confirmedPassword?.value) {
             setError(PasswordNotMatchingError);
             return;
@@ -128,7 +129,11 @@ function Login() {
             className="p-4 rounded-xl bg-green-secondary"
         >
             <div className="flex-col min-h-96 w-96">
-                <form method="dialog" className="flex-col justify-center">
+                <form
+                    method="dialog"
+                    onSubmit={submit}
+                    className="flex-col justify-center"
+                >
                     {formFields.map((key) => (
                         <div key={key} className="relative pb-4">
                             <input
@@ -163,8 +168,7 @@ function Login() {
 
                     <div className="pb-4">
                         <button
-                            type="button"
-                            onClick={submit}
+                            type="submit"
                             className="py-4 w-full rounded-lg duration-200 bg-yellow-primary hover:bg-orange-primary shadow-sm hover:shadow-md"
                         >
                             <span className="inline-block align-middle text-green-primary">
