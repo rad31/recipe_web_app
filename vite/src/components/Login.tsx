@@ -23,6 +23,28 @@ type AuthRequest = {
     password: string;
 };
 
+type FormError = {
+    message: string;
+};
+
+const DuplicateUserError: FormError = {
+    message: "Email already in use",
+};
+
+const InvalidCredentialError: FormError = {
+    message: "Invalid email or password",
+};
+
+const PasswordNotMatchingError: FormError = {
+    message: "Password doesn't match",
+};
+
+const UnexpectedError: FormError = {
+    message: "An unexpected error occured.",
+};
+
+const empty = "\u200b";
+
 const baseLoginForm: CredentialForm = {
     email: {
         value: "",
@@ -47,32 +69,39 @@ const baseSignUpForm: CredentialForm = {
 
 function Login() {
     const [form, setForm] = useState<CredentialForm>(baseLoginForm);
-    const [passwordMatch, setPasswordMatch] = useState(true);
-    const [authenticating, setAuthenticating] = useState(false);
+    const [error, setError] = useState<FormError | null>(null);
     const auth = useAuthContextData();
     const { setAuthenticated } = useAuthContextActions();
     let isSignUp = form.confirmedPassword !== undefined;
 
     const submit = () => {
         if (isSignUp && form.password.value !== form.confirmedPassword?.value) {
-            setPasswordMatch(false);
+            setError(PasswordNotMatchingError);
             return;
         }
 
         const endpoint = isSignUp ? "signup" : "login";
 
-        setAuthenticating(true);
         axios
             .post<AuthRequest>(`http://127.0.0.1:8080/api/auth/${endpoint}`, {
                 username: form.email.value,
                 password: form.password.value,
             })
             .then((result) => {
-                setAuthenticating(false);
-                if (result.status == 200) {
-                    setAuthenticated();
-                } else {
-                    // TODO
+                setAuthenticated();
+                setError(null);
+                console.log(result);
+            })
+            .catch((error) => {
+                switch (error.response.status) {
+                    case 401:
+                        setError(InvalidCredentialError);
+                        break;
+                    case 409:
+                        setError(DuplicateUserError);
+                        break;
+                    default:
+                        setError(UnexpectedError);
                 }
             });
     };
@@ -82,13 +111,13 @@ function Login() {
             let newForm = { ...form };
             delete newForm.confirmedPassword;
             setForm(newForm);
-            setPasswordMatch(true);
         } else {
             setForm((prev) => ({
                 ...prev,
                 confirmedPassword: baseSignUpForm.confirmedPassword,
             }));
         }
+        setError(null);
     };
 
     const formFields = Object.keys(form) as Array<keyof CredentialForm>;
@@ -126,6 +155,11 @@ function Login() {
                             </label>
                         </div>
                     ))}
+                    <div className="pb-4 flex justify-center">
+                        <span className="text-yellow-primary">
+                            {error?.message ?? empty}
+                        </span>
+                    </div>
 
                     <div className="pb-4">
                         <button

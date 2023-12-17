@@ -25,7 +25,7 @@ pub async fn sign_up(mm: &ModelManager, req: LoginRequest) -> Result<Uuid> {
 pub async fn login(mm: &ModelManager, req: LoginRequest) -> Result<Uuid> {
     let db = mm.db();
     
-    let query = "SELECT * FROM users WHERE username = $1";
+    let query = "SELECT id, username, password_hash FROM users WHERE username = $1";
     let user = sqlx::query_as::<_, User>(query)
         .bind(req.username)
         .fetch_one(db)
