@@ -27,25 +27,25 @@ type FormError = {
     message: string;
 };
 
-const DuplicateUserError: FormError = {
+const DUPLICATE_USER: FormError = {
     message: "Email already in use",
 };
 
-const InvalidCredentialError: FormError = {
+const INVALID_CREDENTIALS: FormError = {
     message: "Invalid email or password",
 };
 
-const PasswordNotMatchingError: FormError = {
+const PASSWORD_MISMATCH: FormError = {
     message: "Password doesn't match",
 };
 
-const UnexpectedError: FormError = {
+const UNEXPECTED: FormError = {
     message: "An unexpected error occured.",
 };
 
-const empty = "\u200b";
+const EMPTY = "\u200b";
 
-const baseLoginForm: CredentialForm = {
+const BASE_LOGIN_FORM: CredentialForm = {
     email: {
         value: "",
         label: "Email",
@@ -58,8 +58,8 @@ const baseLoginForm: CredentialForm = {
     },
 };
 
-const baseSignUpForm: CredentialForm = {
-    ...baseLoginForm,
+const BASE_SIGN_UP_FORM: CredentialForm = {
+    ...BASE_LOGIN_FORM,
     confirmedPassword: {
         value: "",
         label: "Confirm password",
@@ -68,7 +68,7 @@ const baseSignUpForm: CredentialForm = {
 };
 
 function Login() {
-    const [form, setForm] = useState<CredentialForm>(baseLoginForm);
+    const [form, setForm] = useState<CredentialForm>(BASE_LOGIN_FORM);
     const [error, setError] = useState<FormError | null>(null);
     const auth = useAuthContextData();
     const { setAuthenticated } = useAuthContextActions();
@@ -77,7 +77,7 @@ function Login() {
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (isSignUp && form.password.value !== form.confirmedPassword?.value) {
-            setError(PasswordNotMatchingError);
+            setError(PASSWORD_MISMATCH);
             return;
         }
 
@@ -96,13 +96,13 @@ function Login() {
             .catch((error) => {
                 switch (error.response.status) {
                     case 401:
-                        setError(InvalidCredentialError);
+                        setError(INVALID_CREDENTIALS);
                         break;
                     case 409:
-                        setError(DuplicateUserError);
+                        setError(DUPLICATE_USER);
                         break;
                     default:
-                        setError(UnexpectedError);
+                        setError(UNEXPECTED);
                 }
             });
     };
@@ -115,7 +115,7 @@ function Login() {
         } else {
             setForm((prev) => ({
                 ...prev,
-                confirmedPassword: baseSignUpForm.confirmedPassword,
+                confirmedPassword: BASE_SIGN_UP_FORM.confirmedPassword,
             }));
         }
         setError(null);
@@ -162,7 +162,7 @@ function Login() {
                     ))}
                     <div className="pb-4 flex justify-center">
                         <span className="text-yellow-primary">
-                            {error?.message ?? empty}
+                            {error?.message ?? EMPTY}
                         </span>
                     </div>
 
