@@ -1,0 +1,12 @@
+pub type Result<T> = core::result::Result<T, Error>;
+
+#[derive(Debug)]
+pub enum Error {
+    Generic(sqlx::Error)
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(e: sqlx::Error) -> Self {
+        Error::Generic(e)
+    }
+}

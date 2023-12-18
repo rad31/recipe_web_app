@@ -14,6 +14,7 @@ pub use config::config;
 use crate::models::ModelManager;
 use crate::models::db::Measure;
 use crate::services::sqlx_service;
+use crate::web::routes_food;
 use std::net::SocketAddr;
 use axum::extract::{Query, Path};
 use axum::{Router, Server, middleware};
@@ -45,7 +46,8 @@ async fn main() -> Result<()> {
         .allow_origin(Any);
 
     let routes_all = Router::new()
-        .merge(routes_auth::routes(model_manager))
+        .merge(routes_auth::routes(model_manager.clone()))
+        .merge(routes_food::routes(model_manager.clone()))
         .nest("/api", routes_hello)
         .layer(middleware::map_response(main_response_mapper))
         .layer(cors)
