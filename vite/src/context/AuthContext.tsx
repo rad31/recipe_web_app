@@ -21,7 +21,6 @@ type Props = {
 
 function AuthContext({ children }: Props) {
     const [state, setState] = useState<AuthState>(AuthState.Unauthenticated);
-    console.log(state);
     const actions = useMemo(
         () => ({
             setAuthenticated: () => setState(AuthState.Authenticated),

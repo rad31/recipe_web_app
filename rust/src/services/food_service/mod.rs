@@ -51,12 +51,14 @@ pub async fn get_measures_by_food(mm: &ModelManager, food_id: i32) -> Result<Vec
 
 pub async fn get_macros_by_food(mm: &ModelManager, food_id: i32, measure_id: i32) -> Result<Macro> {
     let db = mm.db();
+    let calories_id = 208;
     let protein_id = 203;
     let fat_id = 204;
     let carb_id = 205;
 
     let query = "
         SELECT
+            (e.nutrient_value * cf.factor_value) as calories,
             (p.nutrient_value * cf.factor_value) as protein,
             (f.nutrient_value * cf.factor_value) as fat,
             (c.nutrient_value * cf.factor_value) as carb
@@ -65,21 +67,27 @@ pub async fn get_macros_by_food(mm: &ModelManager, food_id: i32, measure_id: i32
             SELECT nutrient_value, food_id
             FROM nutrient_amount
             WHERE nutrient_id = $1
-        ) AS p ON p.food_id = cf.food_id
+        ) AS e ON e.food_id = cf.food_id
         LEFT JOIN (
             SELECT nutrient_value, food_id
             FROM nutrient_amount
             WHERE nutrient_id = $2
-        ) AS f ON f.food_id = cf.food_id
+        ) AS p ON p.food_id = cf.food_id
         LEFT JOIN (
             SELECT nutrient_value, food_id
             FROM nutrient_amount
             WHERE nutrient_id = $3
+        ) AS f ON f.food_id = cf.food_id
+        LEFT JOIN (
+            SELECT nutrient_value, food_id
+            FROM nutrient_amount
+            WHERE nutrient_id = $4
         ) AS c ON c.food_id = cf.food_id
-        WHERE cf.food_id = $4 AND cf.measure_id = $5
+        WHERE cf.food_id = $5 AND cf.measure_id = $6
     ";
 
     let macros = sqlx::query_as::<_, Macro>(query)
+        .bind(calories_id)
         .bind(protein_id)
         .bind(fat_id)
         .bind(carb_id)

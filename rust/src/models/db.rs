@@ -22,6 +22,7 @@ pub struct User {
 
 #[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct Macro {
+    pub calories: f32,
     pub protein: f32,
     pub fat: f32,
     pub carb: f32,

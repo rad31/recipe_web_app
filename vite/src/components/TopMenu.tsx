@@ -2,6 +2,7 @@ import vegetable from "../assets/vegetables_64.png";
 import { AuthState, useAuthContextData } from "../context/AuthContext";
 import Login from "./Login";
 import LoginButton from "./LoginButton";
+import Recipe from "./Recipe";
 
 function TopMenu() {
     const auth = useAuthContextData();
@@ -24,6 +25,7 @@ function TopMenu() {
                     <Login />
                 </div>
             )}
+            <Recipe />
         </>
     );
 }

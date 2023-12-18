@@ -88,10 +88,9 @@ function Login() {
                 username: form.email.value,
                 password: form.password.value,
             })
-            .then((result) => {
+            .then((_) => {
                 setAuthenticated();
                 setError(null);
-                console.log(result);
             })
             .catch((error) => {
                 switch (error.response.status) {
